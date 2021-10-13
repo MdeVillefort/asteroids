@@ -38,7 +38,7 @@ class Spaceship extends GameObject {
   constructor(canvas, ctx, position) {
     super(canvas, ctx,
           position,
-          {w : 30, h : 33, url : "./spaceship.png"},
+          {w : 30, h : 30, url : "./assets/sprites/spaceship.png"},
           new Vector2D(0, 0));
     this.direction = UP;
     this.acceleration = 0.25;

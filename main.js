@@ -1,6 +1,6 @@
-import {Spaceship, Bullet} from "./models.js";
-import {round} from "./utils.js";
-import Vector2D from "./vector.js";
+import {Spaceship, Bullet} from "./modules/models.js";
+import {round} from "./modules/utils.js";
+import Vector2D from "./modules/vector.js";
 
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
