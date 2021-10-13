@@ -21,7 +21,24 @@ function round(num, decimals) {
   return Math.round(num * power) / power;
 }
 
-function loadSprite(w, h, path) {
+function isInCanvas(x, y, canvas) {
+  return ((x >= 0 && x <= canvas.width) &&
+          (y >= 0 && y <= canvas.height));
+}
+
+function loadSprite(path) {
+  return fetch(path).then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    } else {
+      return response.blob();
+    }
+  }).catch(err => {
+    console.log(`There has been a problem loading ${path}: ${err.message}`);
+  });
+}
+
+function loadSpriteOld(w, h, path) {
   return new Promise((resolve, reject) => {
     let sprite = new Image(w, h);
     sprite.src = path;
@@ -30,4 +47,4 @@ function loadSprite(w, h, path) {
     });
   });
 }
-export {deg2rad, rad2deg, wrapPosition, round, loadSprite};
+export {deg2rad, rad2deg, wrapPosition, round, isInCanvas, loadSprite};
