@@ -20,4 +20,14 @@ function round(num, decimals) {
   let power = Math.pow(10, decimals);
   return Math.round(num * power) / power;
 }
-export {deg2rad, rad2deg, wrapPosition, round};
+
+function loadSprite(w, h, path) {
+  return new Promise((resolve, reject) => {
+    let sprite = new Image(w, h);
+    sprite.src = path;
+    sprite.addEventListener('load', e => {
+      resolve(sprite);
+    });
+  });
+}
+export {deg2rad, rad2deg, wrapPosition, round, loadSprite};

@@ -42,7 +42,7 @@ class Vector2D {
   }
 
   set magnitude(mag) {
-    let unit = Vector2D.UnitVector(this.x, this.y);
+    let unit = Vector2D.unit(this.x, this.y);
     let x = unit.x * mag;
     let y = unit.y * mag;
     this.x = x;
@@ -53,7 +53,7 @@ class Vector2D {
     return Math.atan2(this.y, this.x);
   }
 
-  static UnitVector(x, y) {
+  static unit(x, y) {
     let mag = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
     let x0 = x / mag;
     let y0 = y / mag;

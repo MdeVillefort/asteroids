@@ -1,9 +1,10 @@
-import Spaceship from "./spaceship.js";
+import {Spaceship, Bullet} from "./models.js";
 import {round} from "./utils.js";
+import Vector2D from "./vector.js";
 
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
-const spaceship = new Spaceship(canvas, ctx);
+let spaceship = null;
 const spaceshipPosition = document.querySelector("#spaceship-position");
 const spaceshipVelocity = document.querySelector("#spaceship-velocity");
 const spaceshipDirection = document.querySelector("#spaceship-direction");
@@ -27,11 +28,10 @@ window.addEventListener('keyup', (e) => {
 
 function game() {
   // Calculate time since last frame
-  lastFrameTime = currentFrameTime;
   currentFrameTime = Date.now();
   let elapsed = currentFrameTime - lastFrameTime;
 
-  if (elapsed >= fpsInterval) {
+  if (elapsed >= fpsInterval && spaceship.sprite) {
     // Process key presses
     if (keysPressed[65]) {
       spaceship.rotate(false);
@@ -52,6 +52,9 @@ function game() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     spaceship.move();
     spaceship.draw();
+
+    // Update last frame time
+    lastFrameTime = currentFrameTime;
   }
 
   // Request next frame
@@ -59,7 +62,10 @@ function game() {
 }
 
 function start() {
+  spaceship = new Spaceship(canvas, ctx,
+                            new Vector2D(0.5 * canvas.width, 0.5 * canvas.height));
   currentFrameTime = Date.now();
+  lastFrameTime = currentFrameTime;
   game();
 }
 
