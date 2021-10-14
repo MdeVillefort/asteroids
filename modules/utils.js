@@ -1,12 +1,5 @@
 import Vector2D from "./vector.js";
-
-function deg2rad(deg) {
-  return deg * (Math.PI / 180);
-}
-
-function rad2deg(rad) {
-  return rad * (180 / Math.PI);
-}
+import {randrange} from "./math.js";
 
 function wrapPosition(position, canvas) {
   let x = position.x % canvas.width;
@@ -16,9 +9,18 @@ function wrapPosition(position, canvas) {
   return new Vector2D(x, y);
 }
 
-function round(num, decimals) {
-  let power = Math.pow(10, decimals);
-  return Math.round(num * power) / power;
+function getRandomPosition(canvas) {
+  return new Vector2D(Math.random() * canvas.width,
+                      Math.random() * canvas.height);
+}
+
+function getRandomVelocity(min, max) {
+  let speed = randrange(min, max);
+  let angle = randrange(0, 360);
+  let velocity =  new Vector2D(1, 0);
+  velocity.rotate(angle);
+  velocity.magnitude = speed;
+  return velocity;
 }
 
 function isInCanvas(x, y, canvas) {
@@ -47,4 +49,6 @@ function loadSpriteOld(w, h, path) {
     });
   });
 }
-export {deg2rad, rad2deg, wrapPosition, round, isInCanvas, loadSprite};
+
+export {wrapPosition, getRandomPosition,
+        getRandomVelocity, isInCanvas, loadSprite};

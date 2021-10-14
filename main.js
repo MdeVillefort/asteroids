@@ -1,13 +1,17 @@
-import {Spaceship, Bullet} from "./modules/models.js";
-import {round, isInCanvas, loadSprite} from "./modules/utils.js";
+import {Spaceship, Bullet, Asteroid} from "./modules/models.js";
+import {round} from "./modules/math.js";
+import {isInCanvas, loadSprite,
+        getRandomPosition, getRandomVelocity} from "./modules/utils.js";
 import Vector2D from "./modules/vector.js";
 
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 let spaceshipObj = null;
 let bulletObj = null;
+let asteroidObj = null;
 let spaceship = null;
 let bullets = [];
+let asteroids = [];
 const spaceshipPosition = document.querySelector("#spaceship-position");
 const spaceshipVelocity = document.querySelector("#spaceship-velocity");
 const spaceshipDirection = document.querySelector("#spaceship-direction");
@@ -67,6 +71,10 @@ function game() {
       bullet.move(canvas);
       bullet.draw(canvas, ctx);
     }
+    for (let asteroid of asteroids) {
+      asteroid.move(canvas);
+      asteroid.draw(canvas, ctx);
+    }
     spaceship.move(canvas);
     spaceship.draw(canvas, ctx);
 
@@ -86,18 +94,34 @@ function start() {
   // Load all sprites then launch game
   Promise.all([
     loadSprite("./assets/sprites/spaceship.png"),
-    loadSprite("./assets/sprites/bullet.png")
-  ]).then(([spaceshipBlob, bulletBlob]) => {
+    loadSprite("./assets/sprites/bullet.png"),
+    loadSprite("./assets/sprites/asteroid.png")
+  ]).then(([spaceshipBlob, bulletBlob, asteroidBlob]) => {
+
+    // Create sprite objects
     spaceshipObj = {w : 30, h : 30, url : URL.createObjectURL(spaceshipBlob)};
     bulletObj = {w : 5, h : 5, url : URL.createObjectURL(bulletBlob)};
+    asteroidObj = {w : 50, h : 50, url : URL.createObjectURL(asteroidBlob)};
+
+    // Create spaceship
     spaceship = new Spaceship(new Vector2D(0.5 * canvas.width, 0.5 * canvas.height),
                               spaceshipObj,
                               bullet => bullets.push(bullet));
-    window.spaceship = spaceship;
-    window.bulletObj = bulletObj;
-    window.spaceshipObj = spaceshipObj;
-    window.bullets = bullets;
+
+    // Create asteroids...away from spaceship!
+    for (let i = 0; i < 6; i++) {
+      let asteroid_position, asteroid;
+      do {
+        asteroid_position = getRandomPosition(canvas);
+      } while (Vector2D.distance(asteroid_position, spaceship.position) < 100);
+      asteroid = new Asteroid(asteroid_position,
+                              asteroidObj,
+                              roid => asteroids.push(roid));
+      asteroids.push(asteroid);
+    }
+
     game();
+
   }).catch(err => {
     console.log(`Failed to load sprites: ${err.message}`);
   });

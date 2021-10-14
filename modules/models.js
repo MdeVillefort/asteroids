@@ -1,5 +1,6 @@
 import Vector2D from "./vector.js";
-import {rad2deg, deg2rad, wrapPosition} from "./utils.js";
+import {rad2deg, deg2rad} from "./math.js";
+import {wrapPosition, getRandomVelocity} from "./utils.js";
 
 const UP = Vector2D.unit(0, -1);
 
@@ -85,9 +86,29 @@ class Bullet extends GameObject {
 }
 
 class Asteroid extends GameObject {
-  constructor() {
-    ;
+  constructor(position, spriteObj, createAsteroidCallback, scale = 3) {
+    let spriteSize = Asteroid.sizes[scale];
+    [spriteObj.w, spriteObj.h] = [spriteSize, spriteSize];
+    let velocity = getRandomVelocity(1, 5);
+    super(position, velocity, spriteObj);
+    this.scale = scale;
+  }
+
+  split(spriteObj) {
+    if (this.size > 1) {
+      for (let i = 0; i < 2; i++) {
+        let asteroid = new Asteroid(this.position, spriteObj,
+                                    this.createAsteroidCallback, this.scale);
+        this.createAsteroidCallback(asteroid);
+      }
+    }
+  }
+
+  static sizes = {
+    1 : 25,
+    2 : 50,
+    3 : 75
   }
 }
 
-export {Spaceship, Bullet};
+export {Spaceship, Bullet, Asteroid};

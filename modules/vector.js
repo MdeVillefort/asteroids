@@ -1,4 +1,4 @@
-import {rad2deg, deg2rad} from "./utils.js";
+import {rad2deg, deg2rad} from "./math.js";
 
 class Vector2D {
   constructor(x, y) {
@@ -51,6 +51,10 @@ class Vector2D {
 
   get theta() {
     return Math.atan2(this.y, this.x);
+  }
+
+  static distance(v1, v2) {
+    return Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2))
   }
 
   static unit(x, y) {
