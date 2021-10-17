@@ -101,7 +101,7 @@ function start() {
 
     // Create sprite objects
     spaceshipObj = {width : 30, height : 30,
-                    hitbox : new Triangle(Math.sqrt(Math.pow(30, 2) + Math.pow(15, 2)), 30),
+                    hitbox : new IsoTriangle(Math.sqrt(Math.pow(30, 2) + Math.pow(15, 2)), 30),
                     url : URL.createObjectURL(spaceshipBlob)};
     bulletObj = {width : 5, height : 5,
                  hitbox : new Circle(5),
