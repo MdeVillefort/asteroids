@@ -1,6 +1,6 @@
 import {rad2deg, deg2rad} from "./math.js";
 
-class Vector2D {
+class Vector2 {
   constructor(x, y) {
     this.x = x;
     this.y = y;
@@ -17,7 +17,7 @@ class Vector2D {
   }
 
   scale(alpha) {
-    return new Vector2D(this.x * alpha, this.y * alpha);
+    return new Vector2(this.x * alpha, this.y * alpha);
   }
 
   scale_ip(alpha) {
@@ -28,7 +28,7 @@ class Vector2D {
   unitize() {
     let x0 = this.x / this.magnitude;
     let y0 = this.y / this.magnitude;
-    return new Vector2D(x0, y0);
+    return new Vector2(x0, y0);
   }
 
   unitize_ip() {
@@ -42,7 +42,7 @@ class Vector2D {
   }
 
   set magnitude(mag) {
-    let unit = Vector2D.unit(this.x, this.y);
+    let unit = Vector2.unit(this.x, this.y);
     let x = unit.x * mag;
     let y = unit.y * mag;
     this.x = x;
@@ -61,11 +61,11 @@ class Vector2D {
     let mag = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
     let x0 = x / mag;
     let y0 = y / mag;
-    return new Vector2D(x0, y0);
+    return new Vector2(x0, y0);
   }
 
   static add(v1, v2) {
-    return new Vector2D(v1.x + v2.x, v1.y + v2.y);
+    return new Vector2(v1.x + v2.x, v1.y + v2.y);
   }
 }
-export default Vector2D;
+export default Vector2;

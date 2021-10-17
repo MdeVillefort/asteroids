@@ -2,7 +2,8 @@ import {Spaceship, Bullet, Asteroid} from "./modules/models.js";
 import {round} from "./modules/math.js";
 import {isInCanvas, loadSprite,
         getRandomPosition, getRandomVelocity} from "./modules/utils.js";
-import Vector2D from "./modules/vector.js";
+import Vector2 from "./modules/vectors.js";
+import {Circle, Triangle} from "./modules/shapes.js";
 
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
@@ -99,12 +100,18 @@ function start() {
   ]).then(([spaceshipBlob, bulletBlob, asteroidBlob]) => {
 
     // Create sprite objects
-    spaceshipObj = {w : 30, h : 30, url : URL.createObjectURL(spaceshipBlob)};
-    bulletObj = {w : 5, h : 5, url : URL.createObjectURL(bulletBlob)};
-    asteroidObj = {w : 50, h : 50, url : URL.createObjectURL(asteroidBlob)};
+    spaceshipObj = {width : 30, height : 30,
+                    hitbox : new Triangle(Math.sqrt(Math.pow(30, 2) + Math.pow(15, 2)), 30),
+                    url : URL.createObjectURL(spaceshipBlob)};
+    bulletObj = {width : 5, height : 5,
+                 hitbox : new Circle(5),
+                 url : URL.createObjectURL(bulletBlob)};
+    asteroidObj = {width : 50, height : 50,
+                   hitbox : new Circle(50),
+                   url : URL.createObjectURL(asteroidBlob)};
 
     // Create spaceship
-    spaceship = new Spaceship(new Vector2D(0.5 * canvas.width, 0.5 * canvas.height),
+    spaceship = new Spaceship(new Vector2(0.5 * canvas.width, 0.5 * canvas.height),
                               spaceshipObj,
                               bullet => bullets.push(bullet));
 
@@ -113,7 +120,7 @@ function start() {
       let asteroid_position, asteroid;
       do {
         asteroid_position = getRandomPosition(canvas);
-      } while (Vector2D.distance(asteroid_position, spaceship.position) < 100);
+      } while (Vector2.distance(asteroid_position, spaceship.position) < 100);
       asteroid = new Asteroid(asteroid_position,
                               asteroidObj,
                               roid => asteroids.push(roid));

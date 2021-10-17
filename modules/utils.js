@@ -1,4 +1,4 @@
-import Vector2D from "./vector.js";
+import Vector2 from "./vectors.js";
 import {randrange} from "./math.js";
 
 function wrapPosition(position, canvas) {
@@ -6,18 +6,18 @@ function wrapPosition(position, canvas) {
   let y = position.y % canvas.height;
   x = x >= 0 ? x : x + canvas.width;
   y = y >= 0 ? y : y + canvas.height;
-  return new Vector2D(x, y);
+  return new Vector2(x, y);
 }
 
 function getRandomPosition(canvas) {
-  return new Vector2D(Math.random() * canvas.width,
-                      Math.random() * canvas.height);
+  return new Vector2(Math.random() * canvas.width,
+                     Math.random() * canvas.height);
 }
 
 function getRandomVelocity(min, max) {
   let speed = randrange(min, max);
   let angle = randrange(0, 360);
-  let velocity =  new Vector2D(1, 0);
+  let velocity =  new Vector2(1, 0);
   velocity.rotate(angle);
   velocity.magnitude = speed;
   return velocity;

@@ -1,15 +1,17 @@
-import Vector2D from "./vector.js";
+import Vector2 from "./vectors.js";
 import {rad2deg, deg2rad} from "./math.js";
 import {wrapPosition, getRandomVelocity} from "./utils.js";
+import {Circle, IsoTriangle} from "./shapes.js";
 
-const UP = Vector2D.unit(0, -1);
+const UP = Vector2.unit(0, -1);
 
 class GameObject {
   constructor(position, velocity, spriteObj) {
     this.position = position;
     this.velocity = velocity;
-    this.sprite = new Image(spriteObj.w, spriteObj.h);
+    this.sprite = new Image(spriteObj.width, spriteObj.height);
     this.sprite.src = spriteObj.url;
+    this.hitbox = spriteObj.hitbox;
   }
 
   draw(canvas, ctx) {
@@ -21,7 +23,7 @@ class GameObject {
   }
 
   move(canvas) {
-    this.position = Vector2D.add(this.position, this.velocity);
+    this.position = Vector2.add(this.position, this.velocity);
     this.position = wrapPosition(this.position, canvas);
   }
 }
@@ -29,7 +31,7 @@ class GameObject {
 class Spaceship extends GameObject {
   constructor(position, spriteObj, createBulletCallback) {
     super(position,
-          new Vector2D(0, 0),
+          new Vector2(0, 0),
           spriteObj);
     this.direction = UP;
     this.acceleration = 0.25;
@@ -39,7 +41,7 @@ class Spaceship extends GameObject {
   }
 
   accelerate() {
-    this.velocity = Vector2D.add(this.velocity, this.direction.scale(this.acceleration));
+    this.velocity = Vector2.add(this.velocity, this.direction.scale(this.acceleration));
     // Set max speed
     if (this.velocity.magnitude >= 15) {
       this.velocity.magnitude = 15;
@@ -53,10 +55,10 @@ class Spaceship extends GameObject {
   }
 
   shoot(spriteObj) {
-    let bullet_velocity = Vector2D.add(this.velocity,
-                                       this.direction.scale(this.bulletSpeed));
-    let bullet_position = Vector2D.add(this.position,
-                                       this.direction.scale(0.5 * this.sprite.height));
+    let bullet_velocity = Vector2.add(this.velocity,
+                                      this.direction.scale(this.bulletSpeed));
+    let bullet_position = Vector2.add(this.position,
+                                      this.direction.scale(0.5 * this.sprite.height));
     let bullet = new Bullet(bullet_position, bullet_velocity, spriteObj);
     this.createBulletCallback(bullet);
   }
@@ -73,6 +75,10 @@ class Spaceship extends GameObject {
     );
     ctx.restore();
   }
+
+  collidesWithAsteroid(asteroid) {
+    ;
+  }
 }
 
 class Bullet extends GameObject {
@@ -81,7 +87,12 @@ class Bullet extends GameObject {
   }
 
   move(canvas) {
-    this.position =  Vector2D.add(this.position, this.velocity);
+    this.position =  Vector2.add(this.position, this.velocity);
+  }
+
+  collidesWithAsteroid(asteroid) {
+    let distance = Vector2.distance(this.position, asteroid.position);
+    return distance < this.hitbox.radius + asteroid.hitbox.radius;
   }
 }
 
