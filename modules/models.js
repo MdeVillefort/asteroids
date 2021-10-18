@@ -38,6 +38,7 @@ class Spaceship extends GameObject {
     this.maneuverability = 3;
     this.bulletSpeed = 4;
     this.createBulletCallback = createBulletCallback;
+    this.isReloading = false;
   }
 
   accelerate() {
@@ -55,12 +56,19 @@ class Spaceship extends GameObject {
   }
 
   shoot(spriteObj) {
-    let bullet_velocity = Vector2.add(this.velocity,
-                                      this.direction.scale(this.bulletSpeed));
-    let bullet_position = Vector2.add(this.position,
-                                      this.direction.scale(0.5 * this.sprite.height));
-    let bullet = new Bullet(bullet_position, bullet_velocity, spriteObj);
-    this.createBulletCallback(bullet);
+    if (!this.isReloading) {
+      let bullet_velocity = Vector2.add(this.velocity,
+                                        this.direction.scale(this.bulletSpeed));
+      let bullet_position = Vector2.add(this.position,
+                                        this.direction.scale(0.5 * this.sprite.height));
+      let bullet = new Bullet(bullet_position, bullet_velocity, spriteObj);
+      this.createBulletCallback(bullet);
+      this.isReloading = !this.isReloading;
+    }
+
+    setTimeout(() => {
+      this.isReloading = !this.isReloading;
+    }, 200);
   }
 
   draw(canvas, ctx) {
