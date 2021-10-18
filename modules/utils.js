@@ -18,7 +18,7 @@ function getRandomVelocity(min, max) {
   let speed = randrange(min, max);
   let angle = randrange(0, 360);
   let velocity =  new Vector2(1, 0);
-  velocity.rotate(angle);
+  velocity.rotate_ip(angle);
   velocity.magnitude = speed;
   return velocity;
 }

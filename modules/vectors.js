@@ -10,6 +10,15 @@ class Vector2 {
     if (degrees) {
       angle = deg2rad(angle);
     }
+    let x = Math.cos(angle) * this.x - Math.sin(angle) * this.y;
+    let y = Math.sin(angle) * this.x + Math.cos(angle) * this.y;
+    return new Vector2(x, y);
+  }
+
+  rotate_ip(angle, degrees = true) {
+    if (degrees) {
+      angle = deg2rad(angle);
+    }
     let x1 = this.x;
     let y1 = this.y;
     this.x = Math.cos(angle) * x1 - Math.sin(angle) * y1;
@@ -68,8 +77,13 @@ class Vector2 {
     return v1.x * v2.x + v1.y * v2.y;
   }
 
-  static add(v1, v2) {
-    return new Vector2(v1.x + v2.x, v1.y + v2.y);
+  static add(...vectors) {
+    let x = 0, y = 0;
+    for (let vector of vectors) {
+      x += vector.x;
+      y += vector.y;
+    }
+    return new Vector2(x, y);
   }
 
   static fromPoints(x1, y1, x2, y2, unit = false) {

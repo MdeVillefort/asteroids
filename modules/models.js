@@ -51,7 +51,7 @@ class Spaceship extends GameObject {
   rotate(clockwise = true) {
     let sign = clockwise ? 1 : -1;
     let angle = this.maneuverability * sign;
-    this.direction.rotate(angle);
+    this.direction.rotate_ip(angle);
   }
 
   shoot(spriteObj) {
@@ -77,7 +77,39 @@ class Spaceship extends GameObject {
   }
 
   collidesWithAsteroid(asteroid) {
-    ;
+    /*
+    Circle/Triangle collision detection algorithm:
+      Case 1: Vertex within radius of circle
+        1. Calculate vertices of spaceship triangle
+        2. Check is their distance to circle center is < radius
+      Case 2: Circle center within triangle
+        1.
+      Case 3: Circle intersects triangle edge
+        1.
+
+    Resource: http://www.phatcode.net/articles.php?id=459
+    */
+
+    let vertices = this.vertices;
+    for (let vertex of vertices) {
+      if (Vector2.distance(vertex, asteroid.position) < asteroid.hitbox.radius) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  get vertices() {
+    let rBaseVector = this.direction.rotate(90).scale(0.5);
+    let v1 = Vector2.add(this.position,
+                         this.direction.scale(0.5 * this.hitbox.height));
+    let v2 = Vector2.add(this.position,
+                         this.direction.scale(-0.5 * this.hitbox.height),
+                         rBaseVector);
+    let v3 = Vector2.add(this.position,
+                         this.direction.scale(-0.5 * this.hitbox.height),
+                         rBaseVector.scale(-1));
+    return [v1, v2, v3];
   }
 }
 

@@ -61,6 +61,13 @@ function game() {
     spaceshipVelocity.innerText = `velocity:${round(spaceship.velocity.x, 2)}, ${round(spaceship.velocity.y, 2)}`;
     spaceshipDirection.innerText = `direction: ${round(spaceship.direction.x, 2)}, ${round(spaceship.direction.y, 2)}`;
 
+    // Check collisions
+    for (let asteroid of asteroids) {
+      if (spaceship.collidesWithAsteroid(asteroid)) {
+        console.log('Collision detected');
+      }
+    }
+
     // Remove bullets that are out of frame
     bullets = bullets.filter(bullet => {
       return isInCanvas(bullet.position.x, bullet.position.y, canvas);
@@ -107,7 +114,7 @@ function start() {
                  hitbox : new Circle(5),
                  url : URL.createObjectURL(bulletBlob)};
     asteroidObj = {width : 50, height : 50,
-                   hitbox : new Circle(50),
+                   hitbox : new Circle(25),
                    url : URL.createObjectURL(asteroidBlob)};
 
     // Create spaceship
