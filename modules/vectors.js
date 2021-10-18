@@ -64,8 +64,19 @@ class Vector2 {
     return new Vector2(x0, y0);
   }
 
+  static dot(v1, v2) {
+    return v1.x * v2.x + v1.y * v2.y;
+  }
+
   static add(v1, v2) {
     return new Vector2(v1.x + v2.x, v1.y + v2.y);
+  }
+
+  static fromPoints(x1, y1, x2, y2, unit = false) {
+    let x = x2 - x1;
+    let y = y2 - y1;
+    let vector = unit ? Vector2.unit(x, y) : new Vector2(x, y);
+    return vector;
   }
 }
 export default Vector2;

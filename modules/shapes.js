@@ -35,4 +35,4 @@ class IsoTriangle {
   }
 }
 
-export {Circle, Triangle};
+export {Circle, IsoTriangle};

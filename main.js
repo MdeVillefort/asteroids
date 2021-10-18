@@ -3,7 +3,7 @@ import {round} from "./modules/math.js";
 import {isInCanvas, loadSprite,
         getRandomPosition, getRandomVelocity} from "./modules/utils.js";
 import Vector2 from "./modules/vectors.js";
-import {Circle, Triangle} from "./modules/shapes.js";
+import {Circle, IsoTriangle} from "./modules/shapes.js";
 
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
