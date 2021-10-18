@@ -63,12 +63,12 @@ class Spaceship extends GameObject {
                                         this.direction.scale(0.5 * this.sprite.height));
       let bullet = new Bullet(bullet_position, bullet_velocity, spriteObj);
       this.createBulletCallback(bullet);
+      
       this.isReloading = !this.isReloading;
+      setTimeout(() => {
+        this.isReloading = !this.isReloading;
+      }, 200);
     }
-
-    setTimeout(() => {
-      this.isReloading = !this.isReloading;
-    }, 200);
   }
 
   draw(canvas, ctx) {
