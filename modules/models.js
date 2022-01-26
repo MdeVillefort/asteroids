@@ -1,7 +1,7 @@
 import Vector2 from "./vectors.js";
 import {rad2deg, deg2rad} from "./math.js";
 import {wrapPosition, getRandomVelocity} from "./utils.js";
-import {Circle, IsoTriangle} from "./shapes.js";
+import {Circle, IsoTriangle, Rectangle} from "./shapes.js";
 
 const UP = Vector2.unit(0, -1);
 
@@ -9,9 +9,9 @@ class GameObject {
   constructor(position, velocity, spriteObj) {
     this.position = position;
     this.velocity = velocity;
+    this.spriteObj = spriteObj;
     this.sprite = new Image(spriteObj.width, spriteObj.height);
     this.sprite.src = spriteObj.url;
-    this.hitbox = spriteObj.hitbox;
   }
 
   draw(canvas, ctx) {
@@ -36,9 +36,10 @@ class Spaceship extends GameObject {
     this.direction = UP;
     this.acceleration = 0.25;
     this.maneuverability = 3;
-    this.bulletSpeed = 4;
+    this.bulletSpeed = 8;
     this.createBulletCallback = createBulletCallback;
     this.isReloading = false;
+    this.hitbox = new IsoTriangle()
   }
 
   accelerate() {
@@ -63,7 +64,7 @@ class Spaceship extends GameObject {
                                         this.direction.scale(0.5 * this.sprite.height));
       let bullet = new Bullet(bullet_position, bullet_velocity, spriteObj);
       this.createBulletCallback(bullet);
-      
+
       this.isReloading = !this.isReloading;
       setTimeout(() => {
         this.isReloading = !this.isReloading;
@@ -85,6 +86,10 @@ class Spaceship extends GameObject {
   }
 
   collidesWithAsteroid(asteroid) {
+    ;
+  }
+
+  collidesWithAsteroidShapes(asteroid) {
     /*
     Circle/Triangle collision detection algorithm:
       Case 1: Vertex within radius of circle
@@ -124,41 +129,45 @@ class Spaceship extends GameObject {
 class Bullet extends GameObject {
   constructor(position, velocity, spriteObj) {
     super(position, velocity, spriteObj);
+    this.hitbox = new Circle(2.5);
   }
 
   move(canvas) {
     this.position =  Vector2.add(this.position, this.velocity);
   }
-
-  collidesWithAsteroid(asteroid) {
-    let distance = Vector2.distance(this.position, asteroid.position);
-    return distance < this.hitbox.radius + asteroid.hitbox.radius;
-  }
 }
 
 class Asteroid extends GameObject {
-  constructor(position, spriteObj, createAsteroidCallback, scale = 3) {
-    let spriteSize = Asteroid.sizes[scale];
-    [spriteObj.w, spriteObj.h] = [spriteSize, spriteSize];
+  constructor(position, spriteObj, createAsteroidCallback, size = 3) {
+    let spriteScale = Asteroid.sizes_to_scale[size];
+    let scaledWidth = spriteScale * spriteObj.width;
+    let scaledHeight = spriteScale * spriteObj.height;
     let velocity = getRandomVelocity(1, 5);
-    super(position, velocity, spriteObj);
-    this.scale = scale;
+    super(position, velocity, {width : scaledWidth, height : scaledHeight, url : spriteObj.url});
+    this.size = size;
+    this.hitbox = new Circle(0.5 * spriteObj.width);
+    this.createAsteroidCallback = createAsteroidCallback;
   }
 
-  split(spriteObj) {
+  split() {
     if (this.size > 1) {
       for (let i = 0; i < 2; i++) {
-        let asteroid = new Asteroid(this.position, spriteObj,
-                                    this.createAsteroidCallback, this.scale);
+        let asteroid = new Asteroid(this.position, this.spriteObj,
+                                    this.createAsteroidCallback, this.size - 1);
         this.createAsteroidCallback(asteroid);
       }
     }
   }
 
-  static sizes = {
-    1 : 25,
-    2 : 50,
-    3 : 75
+  collidesWithBullet(bullet) {
+    let distance = Vector2.distance(this.position, bullet.position);
+    return distance < this.hitbox.radius + bullet.hitbox.radius;
+  }
+
+  static sizes_to_scale = {
+    1 : 0.50,
+    2 : 0.75,
+    3 : 1.00
   }
 }
 

@@ -23,6 +23,10 @@ function getRandomVelocity(min, max) {
   return velocity;
 }
 
+function getDirectionalRandomVelocity(min, max, direction, angle = 30) {
+  ;
+}
+
 function isInCanvas(x, y, canvas) {
   return ((x >= 0 && x <= canvas.width) &&
           (y >= 0 && y <= canvas.height));
