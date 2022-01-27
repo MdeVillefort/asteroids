@@ -15,6 +15,7 @@ let asteroids = [];
 const spaceshipPosition = document.querySelector("#spaceship-position");
 const spaceshipVelocity = document.querySelector("#spaceship-velocity");
 const spaceshipDirection = document.querySelector("#spaceship-direction");
+const numberOfAsteroids = document.querySelector("#number-asteroids");
 
 const fps = 120;
 const fpsInterval = 1000 / fps;
@@ -66,6 +67,7 @@ function game() {
     spaceshipPosition.innerText = `position: ${round(spaceship.position.x, 2)}, ${round(spaceship.position.y, 2)}`;
     spaceshipVelocity.innerText = `velocity:${round(spaceship.velocity.x, 2)}, ${round(spaceship.velocity.y, 2)}`;
     spaceshipDirection.innerText = `direction: ${round(spaceship.direction.x, 2)}, ${round(spaceship.direction.y, 2)}`;
+    numberOfAsteroids.innerText = `asteroids remaining: ${asteroids.length}`;
 
     // Remove bullets that are out of frame
     bullets = bullets.filter(bullet => {
@@ -79,7 +81,7 @@ function game() {
           console.log('Collision detected');
           asteroids.splice(asteroids.indexOf(asteroid), 1);
           bullets.splice(bullets.indexOf(bullet), 1);
-          asteroid.split();
+          asteroid.split(bullet);
         }
       }
     }
@@ -132,13 +134,13 @@ function start() {
 
     // Create asteroids...away from spaceship!
     for (let i = 0; i < 6; i++) {
-      let asteroid_position, asteroid;
+      let asteroid_position, asteroid_velocity, asteroid;
       do {
         asteroid_position = getRandomPosition(canvas);
+        asteroid_velocity = getRandomVelocity(1, 5);
       } while (Vector2.distance(asteroid_position, spaceship.position) < 100);
-      asteroid = new Asteroid(asteroid_position,
-                              asteroidObj,
-                              roid => asteroids.push(roid));
+      asteroid = new Asteroid(asteroid_position, asteroid_velocity,
+                              asteroidObj, roid => asteroids.push(roid));
       asteroids.push(asteroid);
     }
 

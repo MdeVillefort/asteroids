@@ -23,8 +23,13 @@ function getRandomVelocity(min, max) {
   return velocity;
 }
 
-function getDirectionalRandomVelocity(min, max, direction, angle = 30) {
-  ;
+function getRandomDirectionalVelocity(min, max, direction, angle = 30) {
+  let speed = randrange(min, max);
+  let velocity = new Vector2(direction.x, direction.y);
+  velocity.magnitude = speed;
+  let rotateBy = randrange(-angle, angle);
+  velocity.rotate_ip(rotateBy);
+  return velocity;
 }
 
 function isInCanvas(x, y, canvas) {
@@ -55,4 +60,5 @@ function loadSpriteOld(w, h, path) {
 }
 
 export {wrapPosition, getRandomPosition,
-        getRandomVelocity, isInCanvas, loadSprite};
+        getRandomVelocity, getRandomDirectionalVelocity,
+        isInCanvas, loadSprite};

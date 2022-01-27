@@ -1,6 +1,6 @@
 import Vector2 from "./vectors.js";
 import {rad2deg, deg2rad} from "./math.js";
-import {wrapPosition, getRandomVelocity} from "./utils.js";
+import {wrapPosition, getRandomVelocity, getRandomDirectionalVelocity} from "./utils.js";
 import {Circle, IsoTriangle, Rectangle} from "./shapes.js";
 
 const UP = Vector2.unit(0, -1);
@@ -138,21 +138,22 @@ class Bullet extends GameObject {
 }
 
 class Asteroid extends GameObject {
-  constructor(position, spriteObj, createAsteroidCallback, size = 3) {
+  constructor(position, velocity, spriteObj, createAsteroidCallback, size = 3) {
     let spriteScale = Asteroid.sizes_to_scale[size];
     let scaledWidth = spriteScale * spriteObj.width;
     let scaledHeight = spriteScale * spriteObj.height;
-    let velocity = getRandomVelocity(1, 5);
     super(position, velocity, {width : scaledWidth, height : scaledHeight, url : spriteObj.url});
     this.size = size;
-    this.hitbox = new Circle(0.5 * spriteObj.width);
+    this.hitbox = new Circle(0.5 * scaledWidth);
     this.createAsteroidCallback = createAsteroidCallback;
   }
 
-  split() {
+  split(by) {
     if (this.size > 1) {
+      let direction = by.velocity;
       for (let i = 0; i < 2; i++) {
-        let asteroid = new Asteroid(this.position, this.spriteObj,
+        let velocity = getRandomDirectionalVelocity(1, 5, direction);
+        let asteroid = new Asteroid(this.position, velocity, this.spriteObj,
                                     this.createAsteroidCallback, this.size - 1);
         this.createAsteroidCallback(asteroid);
       }
