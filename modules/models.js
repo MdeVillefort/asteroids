@@ -6,6 +6,7 @@ import {Circle, IsoTriangle, Rectangle} from "./shapes.js";
 const UP = Vector2.unit(0, -1);
 
 class GameObject {
+  
   constructor(position, velocity, spriteObj) {
     this.position = position;
     this.velocity = velocity;
@@ -29,6 +30,7 @@ class GameObject {
 }
 
 class Spaceship extends GameObject {
+
   constructor(position, spriteObj, createBulletCallback) {
     super(position,
           new Vector2(0, 0),
@@ -127,6 +129,7 @@ class Spaceship extends GameObject {
 }
 
 class Bullet extends GameObject {
+
   constructor(position, velocity, spriteObj) {
     super(position, velocity, spriteObj);
     this.hitbox = new Circle(2.5);
@@ -138,6 +141,7 @@ class Bullet extends GameObject {
 }
 
 class Asteroid extends GameObject {
+
   constructor(position, velocity, spriteObj, createAsteroidCallback, size = 3) {
     let spriteScale = Asteroid.sizes_to_scale[size];
     let scaledWidth = spriteScale * spriteObj.width;

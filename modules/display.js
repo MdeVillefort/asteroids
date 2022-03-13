@@ -1,0 +1,6 @@
+class GameDataDisplay {
+
+  constructor(canvas) {
+    ;
+  }
+}
