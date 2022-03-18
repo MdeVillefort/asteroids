@@ -18,7 +18,7 @@ class Game {
     this.gameState = {
       assetsLoaded : false,
       gameReady : false,
-      gamePaused : true,
+      gamePaused : false,
     }
 
     // Set up the canvas
@@ -54,7 +54,7 @@ class Game {
     }
 
     // Set timer to manage fps
-    this.timer.currentFrameTime = Date.now();
+    this.timer.currentFrameTime = performance.now();
 
     // Set keyboard input event listeners
     this._boundHandleKeyPress = this._handleKeyPress.bind(this);
@@ -95,22 +95,26 @@ class Game {
       */
 
       // Set current frame time
-      that.timer.currentFrameTime = Date.now();
+      that.timer.currentFrameTime = timestamp;
 
-      // Process player input if ready for next frame
-      if (that.timer.frameReady()) {
+      // Only update game state is not paused
+      if (!that.gameState.gamePaused) {
 
-        that._handlePlayerInput();
-        that._processGameLogic();
-        that._updateFrame();
+        // Process player input if ready for next frame
+        if (that.timer.frameReady()) {
 
-        // Update spaceship data display
-        /*
-        spaceshipPosition.innerText = `position: ${round(spaceship.position.x, 2)}, ${round(spaceship.position.y, 2)}`;
-        spaceshipVelocity.innerText = `velocity:${round(spaceship.velocity.x, 2)}, ${round(spaceship.velocity.y, 2)}`;
-        spaceshipDirection.innerText = `direction: ${round(spaceship.direction.x, 2)}, ${round(spaceship.direction.y, 2)}`;
-        numberOfAsteroids.innerText = `asteroids remaining: ${asteroids.length}`;
-        */
+          that._handlePlayerInput();
+          that._processGameLogic();
+          that._updateFrame();
+
+          // Update spaceship data display
+          /*
+          spaceshipPosition.innerText = `position: ${round(spaceship.position.x, 2)}, ${round(spaceship.position.y, 2)}`;
+          spaceshipVelocity.innerText = `velocity:${round(spaceship.velocity.x, 2)}, ${round(spaceship.velocity.y, 2)}`;
+          spaceshipDirection.innerText = `direction: ${round(spaceship.direction.x, 2)}, ${round(spaceship.direction.y, 2)}`;
+          numberOfAsteroids.innerText = `asteroids remaining: ${asteroids.length}`;
+          */
+        }
       }
 
       // Request next frame
@@ -129,11 +133,23 @@ class Game {
 
     if (this.keysPressed.hasOwnProperty(e.code)) {
       e.preventDefault();
-      if (e.type === "keydown")
+      if (e.type === "keydown") {
         this.keysPressed[e.code] = true;
-      else if (e.type === "keyup")
+        if (e.code === "Escape") this._pauseGame();
+      }
+      else if (e.type === "keyup") {
         this.keysPressed[e.code] = false;
+      }
     }
+  }
+
+  _pauseGame() {
+    /*
+    Change game's paused state.
+    TODO: Connect/disconnect the listeners on keyboard inputs?
+    */
+
+    this.gameState.gamePaused = !this.gameState.gamePaused;
   }
 
   _processGameLogic() {
@@ -182,6 +198,7 @@ class Game {
     Handle player input.  Move player object logic here.
     */
 
+    // Update player position
     if (this.keysPressed.KeyA) {
       this.spaceship.rotate(false);
     }
@@ -189,8 +206,10 @@ class Game {
       this.spaceship.rotate(true);
     }
     if (this.keysPressed.KeyW) {
-      this.spaceship.accelerate()
+      this.spaceship.accelerate();
     }
+
+    // Create bullets
     if (this.keysPressed.Space) {
       this.spaceship.shoot(this.assets.bullet);
     }

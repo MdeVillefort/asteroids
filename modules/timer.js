@@ -5,7 +5,7 @@ class Timer {
 
   constructor(fps) {
     this.fps = fps;
-    this.#currentFrameTime = Date.now();
+    this.#currentFrameTime = performance.now();
     this.#lastFrameTime = this.#currentFrameTime;
   }
 
