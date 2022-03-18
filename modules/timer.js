@@ -10,7 +10,7 @@ class Timer {
   }
 
   frameReady() {
-    return this.timeSinceLastFrameMS > this.frameIntervalMS;
+    return this.timeSinceLastFrameMS >= this.frameIntervalMS;
   }
 
   get frameIntervalMS() {

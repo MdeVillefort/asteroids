@@ -1,0 +1,19 @@
+
+
+.game-title {
+  text-align: center;
+}
+
+/*
+.game-div {
+  width: 1300px;
+  height: 900px;
+  text-align: center;
+  padding: 0px;
+  border: 10px solid black;
+}
+*/
+
+#game-canvas {
+  border: 3px solid black;
+}

@@ -1,5 +1,6 @@
 import {Spaceship, Bullet, Asteroid} from "./models.js";
-import Timer from "./timer.js"
+import Timer from "./timer.js";
+import GameDataDisplay from "./display.js";
 import {round} from "./math.js";
 import {isInCanvas, loadSprite,
         getRandomPosition, getRandomVelocity} from "./utils.js";
@@ -11,6 +12,7 @@ class Game {
 
     // Initialize some stuff
     this.timer = new Timer(120);
+    this.gameDataDisplay = new GameDataDisplay();
     this.asteroids = [];
     this.bullets = [];
     this.gameState = {
@@ -55,8 +57,9 @@ class Game {
     this.timer.currentFrameTime = Date.now();
 
     // Set keyboard input event listeners
-    window.addEventListener('keydown', this._handleKeyPress.bind(this));
-    window.addEventListener('keyup', this._handleKeyPress.bind(this));
+    this._boundHandleKeyPress = this._handleKeyPress.bind(this);
+    window.addEventListener('keydown', this._boundHandleKeyPress);
+    window.addEventListener('keyup', this._boundHandleKeyPress);
 
     // Create the spaceship
     this.spaceship = new Spaceship(new Vector2(0.5 * this.canvas.width, 0.5 * this.canvas.height),
@@ -67,7 +70,7 @@ class Game {
     for (let i = 0; i < 6; i++) {
       let asteroid_position, asteroid_velocity, asteroid;
       do {
-        asteroid_position = getRandomPosition(canvas);
+        asteroid_position = getRandomPosition(this.canvas);
         asteroid_velocity = getRandomVelocity(1, 5);
       } while (Vector2.distance(asteroid_position, this.spaceship.position) < 100);
       asteroid = new Asteroid(asteroid_position, asteroid_velocity,
@@ -82,27 +85,40 @@ class Game {
 
   loop() {
 
-    // Set current frame time
-    this.timer.currentFrameTime = Date.now();
+    // Create local binding to `this`
+    const that = this;
 
-    // Process player input if ready for next frame
-    if (this.timer.frameReady()) {
-
-      this._handlePlayerInput();
-      this._processGameLogic();
-      this._updateFrame();
-
-      // Update spaceship data display
+    function frame(timestamp) {
       /*
-      spaceshipPosition.innerText = `position: ${round(spaceship.position.x, 2)}, ${round(spaceship.position.y, 2)}`;
-      spaceshipVelocity.innerText = `velocity:${round(spaceship.velocity.x, 2)}, ${round(spaceship.velocity.y, 2)}`;
-      spaceshipDirection.innerText = `direction: ${round(spaceship.direction.x, 2)}, ${round(spaceship.direction.y, 2)}`;
-      numberOfAsteroids.innerText = `asteroids remaining: ${asteroids.length}`;
+      Inner function to create closure with `this` bound to the Game
+      object in the enclosing scope to be passed to requestAnimationFrame.
       */
+
+      // Set current frame time
+      that.timer.currentFrameTime = Date.now();
+
+      // Process player input if ready for next frame
+      if (that.timer.frameReady()) {
+
+        that._handlePlayerInput();
+        that._processGameLogic();
+        that._updateFrame();
+
+        // Update spaceship data display
+        /*
+        spaceshipPosition.innerText = `position: ${round(spaceship.position.x, 2)}, ${round(spaceship.position.y, 2)}`;
+        spaceshipVelocity.innerText = `velocity:${round(spaceship.velocity.x, 2)}, ${round(spaceship.velocity.y, 2)}`;
+        spaceshipDirection.innerText = `direction: ${round(spaceship.direction.x, 2)}, ${round(spaceship.direction.y, 2)}`;
+        numberOfAsteroids.innerText = `asteroids remaining: ${asteroids.length}`;
+        */
+      }
+
+      // Request next frame
+      requestAnimationFrame(frame);
     }
 
-    // Request next frame
-    requestAnimationFrame(this.loop.bind(this));
+    // Request first frame
+    requestAnimationFrame(frame);
   }
 
   _handleKeyPress(e) {
@@ -125,22 +141,22 @@ class Game {
     Collision logic here.
     */
 
-      // Remove bullets that are out of frame
-      this.bullets = this.bullets.filter(bullet => {
-        return isInCanvas(bullet.position.x, bullet.position.y, this.canvas);
-      });
+    // Remove bullets that are out of frame
+    this.bullets = this.bullets.filter(bullet => {
+      return isInCanvas(bullet.position.x, bullet.position.y, this.canvas);
+    });
 
-      // Check collisions
-      for (let bullet of this.bullets.slice()) {
-        for (let asteroid of this.asteroids.slice()) {
-          if (asteroid.collidesWithBullet(bullet)) {
-            console.log('Collision detected');
-            this.asteroids.splice(this.asteroids.indexOf(asteroid), 1);
-            this.bullets.splice(this.bullets.indexOf(bullet), 1);
-            asteroid.split(bullet);
-          }
+    // Check collisions
+    for (let bullet of this.bullets.slice()) {
+      for (let asteroid of this.asteroids.slice()) {
+        if (asteroid.collidesWithBullet(bullet)) {
+          console.log('Collision detected');
+          this.asteroids.splice(this.asteroids.indexOf(asteroid), 1);
+          this.bullets.splice(this.bullets.indexOf(bullet), 1);
+          asteroid.split(bullet);
         }
       }
+    }
   }
 
   _updateFrame() {
