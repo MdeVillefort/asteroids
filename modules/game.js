@@ -106,14 +106,8 @@ class Game {
           that._handlePlayerInput();
           that._processGameLogic();
           that._updateFrame();
+          that._updateDisplay();
 
-          // Update spaceship data display
-          /*
-          spaceshipPosition.innerText = `position: ${round(spaceship.position.x, 2)}, ${round(spaceship.position.y, 2)}`;
-          spaceshipVelocity.innerText = `velocity:${round(spaceship.velocity.x, 2)}, ${round(spaceship.velocity.y, 2)}`;
-          spaceshipDirection.innerText = `direction: ${round(spaceship.direction.x, 2)}, ${round(spaceship.direction.y, 2)}`;
-          numberOfAsteroids.innerText = `asteroids remaining: ${asteroids.length}`;
-          */
         }
       }
 
@@ -150,6 +144,23 @@ class Game {
     */
 
     this.gameState.gamePaused = !this.gameState.gamePaused;
+  }
+
+  _updateDisplay() {
+    /*
+    Update spaceship data display
+    */
+
+    const spaceshipPosition = `position: ${round(this.spaceship.position.x, 2)}, ${round(this.spaceship.position.y, 2)}`;
+    const spaceshipVelocity = `velocity: ${round(this.spaceship.velocity.x, 2)}, ${round(this.spaceship.velocity.y, 2)}`;
+    const spaceshipDirection = `direction: ${round(this.spaceship.direction.x, 2)}, ${round(this.spaceship.direction.y, 2)}`;
+    const numberOfAsteroids = `asteroids remaining: ${this.asteroids.length}`;
+    const displayText = [spaceshipPosition, spaceshipVelocity, spaceshipDirection, numberOfAsteroids];
+    let x = 5, y = 10;
+    for (let text of displayText) {
+      this.gameDataDisplay.draw(this.canvas, this.ctx, x, y, text);
+      y += 10;
+    }
   }
 
   _processGameLogic() {
