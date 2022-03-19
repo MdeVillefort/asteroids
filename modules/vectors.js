@@ -10,8 +10,8 @@ class Vector2 {
     if (degrees) {
       angle = deg2rad(angle);
     }
-    let x = Math.cos(angle) * this.x - Math.sin(angle) * this.y;
-    let y = Math.sin(angle) * this.x + Math.cos(angle) * this.y;
+    const x = Math.cos(angle) * this.x - Math.sin(angle) * this.y;
+    const y = Math.sin(angle) * this.x + Math.cos(angle) * this.y;
     return new Vector2(x, y);
   }
 
@@ -19,8 +19,8 @@ class Vector2 {
     if (degrees) {
       angle = deg2rad(angle);
     }
-    let x1 = this.x;
-    let y1 = this.y;
+    const x1 = this.x;
+    const y1 = this.y;
     this.x = Math.cos(angle) * x1 - Math.sin(angle) * y1;
     this.y = Math.sin(angle) * x1 + Math.cos(angle) * y1;
   }
@@ -35,14 +35,14 @@ class Vector2 {
   }
 
   unitize() {
-    let x0 = this.x / this.magnitude;
-    let y0 = this.y / this.magnitude;
+    const x0 = this.x / this.magnitude;
+    const y0 = this.y / this.magnitude;
     return new Vector2(x0, y0);
   }
 
   unitize_ip() {
-    let x0 = this.x / this.magnitude;
-    let y0 = this.y / this.magnitude;
+    const x0 = this.x / this.magnitude;
+    const y0 = this.y / this.magnitude;
     [this.x, this.y] = [x0, y0];
   }
 
@@ -51,9 +51,9 @@ class Vector2 {
   }
 
   set magnitude(mag) {
-    let unit = Vector2.unit(this.x, this.y);
-    let x = unit.x * mag;
-    let y = unit.y * mag;
+    const unit = Vector2.unit(this.x, this.y);
+    const x = unit.x * mag;
+    const y = unit.y * mag;
     this.x = x;
     this.y = y;
   }
@@ -63,13 +63,13 @@ class Vector2 {
   }
 
   static distance(v1, v2) {
-    return Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2))
+    return Math.sqrt(Math.pow(v1.x - v2.x, 2) + Math.pow(v1.y - v2.y, 2));
   }
 
   static unit(x, y) {
-    let mag = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-    let x0 = x / mag;
-    let y0 = y / mag;
+    const mag = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    const x0 = x / mag;
+    const y0 = y / mag;
     return new Vector2(x0, y0);
   }
 
@@ -87,9 +87,9 @@ class Vector2 {
   }
 
   static fromPoints(x1, y1, x2, y2, unit = false) {
-    let x = x2 - x1;
-    let y = y2 - y1;
-    let vector = unit ? Vector2.unit(x, y) : new Vector2(x, y);
+    const x = x2 - x1;
+    const y = y2 - y1;
+    const vector = unit ? Vector2.unit(x, y) : new Vector2(x, y);
     return vector;
   }
 }
