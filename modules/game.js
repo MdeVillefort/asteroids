@@ -46,8 +46,8 @@ class Game {
 
       // Create the spaceship
       this.spaceship = new Spaceship(new Vector2(0.5 * this.canvas.width, 0.5 * this.canvas.height),
-                                    this.assets.spaceship,
-                                    bullet => this.bullets.push(bullet));
+                                     this.assets.spaceship,
+                                     bullet => this.bullets.push(bullet));
       
       // Start the default screen
       this.displayScreensaver();
@@ -187,7 +187,7 @@ class Game {
   _togglePause() {
     /*
     Change game's paused state.
-    TODO: Remove keyboard event listeners?
+    TODO: Remove keyboard event listeners here?
     */
 
     this.gameState.paused = !this.gameState.paused;
