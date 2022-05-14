@@ -1,32 +1,58 @@
-body {
-  background-color: rgb(80, 80, 80);
-  margin: 0;
+* {
+  box-sizing: border-box;
 }
 
-.game-title-div {
-  text-align: center;
-  color: white;
+body {
+  background-color: rgb(80, 80, 80);
   margin: 0;
 }
 
 .game-title {
   margin: 0;
   font-family: "Garmond";
-  font-size: 3rem;
+  text-align: center;
+  color: white;
 }
 
-/*
-.game-div {
-  width: 1300px;
-  height: 900px;
-  text-align: center;
-  padding: 0px;
-  border: 10px solid black;
+.game {
+  position: relative;
+  width: 1200px;
+  height: 800px;
+  margin: 2rem auto;
 }
-*/
+
 
 #game-canvas {
   display: block;
+  position: absolute;
+  z-index: 1;
+  width: 1200px;
+  height: 800px;
   background-color: rgb(150, 150, 150);
+}
+
+.game-menu {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  top: 40%;
   margin: 0 auto;
+  z-index: 9;
+  text-align: center;
+}
+
+.btn {
+  display: block;
+  cursor: pointer;
+  color: blue;
+  margin: 5px;
+}
+
+.btn:hover {
+  background-color: hsl(0, 0%, 80%);
+  box-shadow: 0 0 5px 0 hsl(0, 0%, 70%);
+}
+
+.invisible {
+  display: none;
 }

@@ -8,7 +8,7 @@ import Vector2 from "./vectors.js";
 
 class Game {
 
-  constructor(canvas) {
+  constructor(canvas, menu) {
 
     // Initialize some stuff
     this.timer = new Timer(120);
@@ -20,11 +20,18 @@ class Game {
       assetsLoaded : false,
       paused : false,
       screensaver : false,
+      nextFrameId : null,
     };
 
     // Set up the canvas
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
+
+    // Set up the game menu
+    this.menu = menu;
+    this.menu.play.addEventListener("click", this.start.bind(this));
+    this.menu.continue.addEventListener("click", this._togglePause.bind(this));
+    this.menu.backToMenu.addEventListener("click", this.displayScreensaver.bind(this));
 
     // Setup keyboard input
     this.keysPressed = {
@@ -34,7 +41,11 @@ class Game {
       Space : false,
       Escape : false,
     };
+    
+    // Set keyboard input event listeners
     this._boundHandleKeyPress = this._handleKeyPress.bind(this);
+    window.addEventListener('keydown', this._boundHandleKeyPress);
+    window.addEventListener('keyup', this._boundHandleKeyPress);
 
     // Load the game assets
     this._loadAssets().then(assets => {
@@ -44,11 +55,6 @@ class Game {
       this.gameState.assetsLoaded = true;
       this.gameState.screensaver = true;
 
-      // Create the spaceship
-      this.spaceship = new Spaceship(new Vector2(0.5 * this.canvas.width, 0.5 * this.canvas.height),
-                                     this.assets.spaceship,
-                                     bullet => this.bullets.push(bullet));
-      
       // Start the default screen
       this.displayScreensaver();
 
@@ -69,13 +75,20 @@ class Game {
     this._clearGameObjects();
     this.gameState.screensaver = false;
 
+    this._displayMenuItems({
+      "title" : false,
+      "play" : false,
+      "continue" : false,
+      "backToMenu" : false
+    });
+
     // Set timer to manage fps
     this.timer.currentFrameTime = performance.now();
 
-    // Set keyboard input event listeners
-    window.addEventListener('keydown', this._boundHandleKeyPress);
-    window.addEventListener('keyup', this._boundHandleKeyPress);
-
+    // Create the spaceship
+    this.spaceship = new Spaceship(new Vector2(0.5 * this.canvas.width, 0.5 * this.canvas.height),
+                                   this.assets.spaceship,
+                                   bullet => this.bullets.push(bullet));
     // Create asteroids...away from spaceship!
     this._createAsteroids(6);
 
@@ -94,13 +107,17 @@ class Game {
       object in the enclosing scope to be passed to requestAnimationFrame.
       */
 
+      // Request next frame
+      that.gameState.nextFrameId = requestAnimationFrame(frame);
+
       // Set current frame time
       that.timer.currentFrameTime = timestamp;
 
       // Only update game state when game is in progress and not paused
       if (that.gameState.screensaver) {
 
-        that._updateFrame();
+        if (that.timer.frameReady())
+          that._updateFrame();
 
       } else if (!that.gameState.paused) {
 
@@ -114,13 +131,9 @@ class Game {
 
         }
       }
-
-      // Request next frame
-      requestAnimationFrame(frame);
     }
 
-    // Request first frame
-    requestAnimationFrame(frame);
+    that.gameState.nextFrameId = requestAnimationFrame(frame);
   }
 
   displayScreensaver() {
@@ -128,11 +141,22 @@ class Game {
     Creates assets to float around before the game is started.
     */
 
+    this.gameState.screensaver = true;
+    this.gameState.paused = false;
+
     // Clear existing game objects
     this._clearGameObjects();
 
     // Create asteroids.
     this._createAsteroids(6, 0);
+
+    // Show menu
+    this._displayMenuItems({
+      "title" : true,
+      "play" : true,
+      "continue" : false,
+      "backToMenu" : false
+    });
 
     // Start game loop
     this.loop();
@@ -141,9 +165,7 @@ class Game {
   _clearGameObjects() {
     this.asteroids = [];
     this.bullets = [];
-    this.spaceship = new Spaceship(new Vector2(0.5 * this.canvas.width, 0.5 * this.canvas.height),
-                                   this.assets.spaceship,
-                                   bullet => this.bullets.push(bullet));
+    this.spaceship = null;
   }
 
   _createAsteroids(number, threshold = 100) {
@@ -153,12 +175,20 @@ class Game {
     asteroid can be to the spaceship's position.
     */
 
+    // If spaceship variable is null, use canvas center.
+    let spaceship_position;
+    if (this.spaceship === null) {
+      spaceship_position = new Vector2(0.5 * this.canvas.width, 0.5 * this.canvas.height);
+    } else {
+      spaceship_position = this.spaceship.position;
+    }
+
     for (let i = 0; i < number; i++) {
       let asteroid_position, asteroid_velocity, asteroid;
       do {
         asteroid_position = getRandomPosition(this.canvas);
         asteroid_velocity = getRandomVelocity(1, 5);
-      } while (Vector2.distance(asteroid_position, this.spaceship.position) < threshold);
+      } while (Vector2.distance(asteroid_position, spaceship_position) < threshold);
       asteroid = new Asteroid(asteroid_position, asteroid_velocity,
                               this.assets.asteroid,
                               roid => this.asteroids.push(roid));
@@ -176,7 +206,9 @@ class Game {
       e.preventDefault();
       if (e.type === "keydown") {
         this.keysPressed[e.code] = true;
-        if (e.code === "Escape") this._togglePause();
+
+        if (e.code === "Escape")
+          this._togglePause();
       }
       else if (e.type === "keyup") {
         this.keysPressed[e.code] = false;
@@ -191,6 +223,37 @@ class Game {
     */
 
     this.gameState.paused = !this.gameState.paused;
+
+    const keys = Object.keys(this.menu);
+    if (this.gameState.paused) {
+      this._displayMenuItems({
+        "title" : true,
+        "play" : false,
+        "continue" : true,
+        "backToMenu" : true
+      });
+      cancelAnimationFrame(this.gameState.nextFrameId);
+    } else {
+      this._displayMenuItems({
+        "title" : false,
+        "play" : false,
+        "continue" : false,
+        "backToMenu" : false
+      });
+      this.loop();
+    }
+  }
+
+  _displayMenuItems(items) {
+    /* Display specific items from the menu. */
+
+    const keys = Object.keys(this.menu);
+    for (let key of keys) {
+      if (items[key])
+        this.menu[key].style.display = "block";
+      else
+        this.menu[key].style.display = "none";
+    }
   }
 
   _updateDisplay() {
@@ -249,7 +312,7 @@ class Game {
       asteroid.draw(this.canvas, this.ctx);
     }
 
-    if (!this.gameState.screensaver) {
+    if (this.spaceship !== null) {
       this.spaceship.move(this.canvas);
       this.spaceship.draw(this.canvas, this.ctx);
     }
@@ -260,13 +323,15 @@ class Game {
     Handle player input.  Move player object logic here.
     */
 
-    // Update player position
+    // Update game asset position only if not paused
     if (this.keysPressed.KeyA) {
       this.spaceship.rotate(false);
     }
+
     if (this.keysPressed.KeyD) {
       this.spaceship.rotate(true);
     }
+
     if (this.keysPressed.KeyW) {
       this.spaceship.accelerate();
     }
