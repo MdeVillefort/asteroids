@@ -20,7 +20,6 @@ class Game {
       assetsLoaded : false,
       paused : false,
       screensaver : false,
-      nextFrameId : null,
     };
 
     // Set up the canvas
@@ -107,9 +106,6 @@ class Game {
       object in the enclosing scope to be passed to requestAnimationFrame.
       */
 
-      // Request next frame
-      that.gameState.nextFrameId = requestAnimationFrame(frame);
-
       // Set current frame time
       that.timer.currentFrameTime = timestamp;
 
@@ -119,7 +115,7 @@ class Game {
         if (that.timer.frameReady())
           that._updateFrame();
 
-      } else if (!that.gameState.paused) {
+      } else {
 
         // Process player input if ready for next frame
         if (that.timer.frameReady()) {
@@ -131,9 +127,14 @@ class Game {
 
         }
       }
+
+      // Request next frame if not paused
+      if (!that.gameState.paused)
+        requestAnimationFrame(frame);
     }
 
-    that.gameState.nextFrameId = requestAnimationFrame(frame);
+    // Request first frame
+    requestAnimationFrame(frame);
   }
 
   displayScreensaver() {
@@ -232,7 +233,6 @@ class Game {
         "continue" : true,
         "backToMenu" : true
       });
-      cancelAnimationFrame(this.gameState.nextFrameId);
     } else {
       this._displayMenuItems({
         "title" : false,

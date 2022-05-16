@@ -4,6 +4,8 @@ const menu = {
   title : document.querySelector(".game-title"),
   play : document.querySelector("#play"),
   continue : document.querySelector("#continue"),
+  controls : document.querySelector("#controls"),
+  controlsImg : document.querySelector("#controls-img"),
   backToMenu : document.querySelector("#back-to-menu")
 };
 
