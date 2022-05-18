@@ -82,6 +82,8 @@ class Game {
       "continue" : false,
       "controls" : false,
       "controlsImg" : false,
+      "winMsg" : false,
+      "lossMsg" : false,
       "backToMenu" : false
     });
 
@@ -165,6 +167,8 @@ class Game {
       "continue" : false,
       "controls" : true,
       "controlsImg" : false,
+      "winMsg" : false,
+      "lossMsg" : false,
       "backToMenu" : false
     });
 
@@ -240,6 +244,8 @@ class Game {
         "continue" : true,
         "controls" : false,
         "controlsImg" : false,
+        "winMsg" : false,
+        "lossMsg" : false,
         "backToMenu" : true,
       });
     } else {
@@ -249,6 +255,8 @@ class Game {
         "continue" : false,
         "controls" : false,
         "controlsImg" : false,
+        "winMsg" : false,
+        "lossMsg" : false,
         "backToMenu" : false,
       });
       this.loop();
@@ -269,6 +277,8 @@ class Game {
         "continue" : false,
         "controls" : false,
         "controlsImg" : true,
+        "winMsg" : false,
+        "lossMsg" : false,
         "backToMenu" : true
       });
     } else {
@@ -278,10 +288,50 @@ class Game {
         "continue" : false,
         "controls" : true,
         "controlsImg" : false,
+        "winMsg" : false,
+        "lossMsg" : false,
         "backToMenu" : false
       });
     }
 
+  }
+
+  _displayWin() {
+    /*
+    Display the winner's message.
+    */
+
+    this.gameState.paused = !this.gameState.paused;
+
+    this._displayMenuItems({
+      "title" : false,
+      "play" : false,
+      "continue" : false,
+      "controls" : false,
+      "controlsImg" : false,
+      "winMsg" : true,
+      "lossMsg" : false,
+      "backToMenu" : true
+    });
+  }
+
+  _displayLoss() {
+    /*
+    Display the losser's message.
+    */
+
+    this.gameState.paused = !this.gameState.paused;
+
+    this._displayMenuItems({
+      "title" : false,
+      "play" : false,
+      "continue" : false,
+      "controls" : false,
+      "controlsImg" : false,
+      "winMsg" : false,
+      "lossMsg" : true,
+      "backToMenu" : true
+    });
   }
 
   _displayMenuItems(items) {
@@ -319,12 +369,16 @@ class Game {
     Collision logic here.
     */
 
+    // Check that there are asteroids left
+    if (this.asteroids.length === 0)
+      this._displayWin();
+
     // Remove bullets that are out of frame
     this.bullets = this.bullets.filter(bullet => {
       return isInCanvas(bullet.position.x, bullet.position.y, this.canvas);
     });
 
-    // Check collisions
+    // Check bullet/asteroid collisions
     for (let bullet of this.bullets.slice()) {
       for (let asteroid of this.asteroids.slice()) {
         if (asteroid.collidesWithBullet(bullet)) {
@@ -332,6 +386,13 @@ class Game {
           this.bullets.splice(this.bullets.indexOf(bullet), 1);
           asteroid.split(bullet);
         }
+      }
+    }
+
+    // Check asteroid/spaceship collisions
+    for (let asteroid of this.asteroids.slice()) {
+      if (this.spaceship.collidesWithAsteroidCircle(asteroid)) {
+        this._displayLoss();
       }
     }
   }
