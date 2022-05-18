@@ -20,6 +20,7 @@ class Game {
       assetsLoaded : false,
       paused : false,
       screensaver : false,
+      displayControls : false
     };
 
     // Set up the canvas
@@ -30,6 +31,7 @@ class Game {
     this.menu = menu;
     this.menu.play.addEventListener("click", this.start.bind(this));
     this.menu.continue.addEventListener("click", this._togglePause.bind(this));
+    this.menu.controls.addEventListener("click", this._displayControls.bind(this));
     this.menu.backToMenu.addEventListener("click", this.displayScreensaver.bind(this));
 
     // Setup keyboard input
@@ -78,6 +80,8 @@ class Game {
       "title" : false,
       "play" : false,
       "continue" : false,
+      "controls" : false,
+      "controlsImg" : false,
       "backToMenu" : false
     });
 
@@ -144,18 +148,23 @@ class Game {
 
     this.gameState.screensaver = true;
     this.gameState.paused = false;
+    const displayingControls = this.gameState.displayControls;
+    this.gameState.displayControls = false;
 
-    // Clear existing game objects
-    this._clearGameObjects();
-
-    // Create asteroids.
-    this._createAsteroids(6, 0);
+    // Clear existing game objects and create asteroids
+    // only if returning from game not controls display
+    if (!displayingControls) {
+      this._clearGameObjects();
+      this._createAsteroids(6, 0);
+    }
 
     // Show menu
     this._displayMenuItems({
       "title" : true,
       "play" : true,
       "continue" : false,
+      "controls" : true,
+      "controlsImg" : false,
       "backToMenu" : false
     });
 
@@ -220,28 +229,59 @@ class Game {
   _togglePause() {
     /*
     Change game's paused state.
-    TODO: Remove keyboard event listeners here?
     */
 
     this.gameState.paused = !this.gameState.paused;
 
-    const keys = Object.keys(this.menu);
     if (this.gameState.paused) {
       this._displayMenuItems({
         "title" : true,
         "play" : false,
         "continue" : true,
-        "backToMenu" : true
+        "controls" : false,
+        "controlsImg" : false,
+        "backToMenu" : true,
       });
     } else {
       this._displayMenuItems({
         "title" : false,
         "play" : false,
         "continue" : false,
-        "backToMenu" : false
+        "controls" : false,
+        "controlsImg" : false,
+        "backToMenu" : false,
       });
       this.loop();
     }
+  }
+
+  _displayControls() {
+    /*
+    Display the controls png
+    */
+
+    this.gameState.displayControls = !this.gameState.displayControls;
+
+    if (this.gameState.displayControls) {
+      this._displayMenuItems({
+        "title" : false,
+        "play" : false,
+        "continue" : false,
+        "controls" : false,
+        "controlsImg" : true,
+        "backToMenu" : true
+      });
+    } else {
+      this._displayMenuItems({
+        "title" : true,
+        "play" : true,
+        "continue" : false,
+        "controls" : true,
+        "controlsImg" : false,
+        "backToMenu" : false
+      });
+    }
+
   }
 
   _displayMenuItems(items) {
@@ -288,7 +328,6 @@ class Game {
     for (let bullet of this.bullets.slice()) {
       for (let asteroid of this.asteroids.slice()) {
         if (asteroid.collidesWithBullet(bullet)) {
-          console.log('Collision detected');
           this.asteroids.splice(this.asteroids.indexOf(asteroid), 1);
           this.bullets.splice(this.bullets.indexOf(bullet), 1);
           asteroid.split(bullet);
@@ -323,7 +362,6 @@ class Game {
     Handle player input.  Move player object logic here.
     */
 
-    // Update game asset position only if not paused
     if (this.keysPressed.KeyA) {
       this.spaceship.rotate(false);
     }

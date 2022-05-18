@@ -34,7 +34,7 @@ class Spaceship extends GameObject {
     super(position,
           new Vector2(0, 0),
           spriteObj);
-    this.direction = UP;
+    this.direction = Vector2.unit(0, -1);
     this.acceleration = 0.25;
     this.maneuverability = 3;
     this.bulletSpeed = 8;
